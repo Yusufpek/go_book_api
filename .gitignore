@@ -1,0 +1,27 @@
+.env
+
+# Go build artifacts
+bin/
+build/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Go modules
+go.sum
+
+# IDE/editor files
+.vscode/
+.idea/
+*.swp
+*~
+__pycache__/
+.DS_Store
+
+# Dependency directories
+vendor/
+
