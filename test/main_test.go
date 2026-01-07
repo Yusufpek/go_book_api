@@ -14,7 +14,10 @@ import (
 	"gorm.io/gorm/logger"
     "gorm.io/gorm"
 
-    "go_book_api/api"
+    "go_book_api/api/handlers"
+	"go_book_api/api/models"
+	"go_book_api/api/response"
+	"go_book_api/api/repositories"
 )
 
 func init() {
@@ -23,42 +26,42 @@ func init() {
 
 func setupTestDB() {
 	var err error
-	api.DB, err = gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	repositories.DB, err = gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("Failed to connect to test database: %v", err)
 	}
-	if err := api.DB.AutoMigrate(&api.Book{}); err != nil {
+	if err := repositories.DB.AutoMigrate(&models.Book{}); err != nil {
 		log.Fatalf("Failed to migrate test database: %v", err)
 	}
 }
 
 func setupRouter() *gin.Engine {
 	r := gin.Default()
-	r.POST("/book", api.CreateBook)
-	r.GET("/books", api.GetBooks)
-	r.GET("/books/:id", api.GetBook)
-	r.PUT("/books/:id", api.UpdateBook)
-	r.DELETE("/books/:id", api.DeleteBook)
+	r.POST("/book", handlers.CreateBook)
+	r.GET("/books", handlers.GetBooks)
+	r.GET("/books/:id", handlers.GetBook)
+	r.PUT("/books/:id", handlers.UpdateBook)
+	r.DELETE("/books/:id", handlers.DeleteBook)
 	return r
 }
 
-func decodeResponse(w *httptest.ResponseRecorder, t *testing.T) api.JsonResponse {
-	var response api.JsonResponse
+func decodeResponse(w *httptest.ResponseRecorder, t *testing.T) response.JsonResponse {
+	var response response.JsonResponse
 	if err := json.NewDecoder(w.Body).Decode(&response); err != nil {
 		t.Fatalf("Failed to decode response: %v", err)
 	}
 	return response
 }
 
-func addBook() api.Book {
-	book := api.Book{
+func addBook() models.Book {
+	book := models.Book{
 		Title: "Test Book",
 		Author: "Test Author",
 		PageCount: 123,
 		PublishedYear: 2020,
 	}
 
-	api.DB.Create(&book)
+	repositories.DB.Create(&book)
 	return book
 }
 
@@ -66,7 +69,7 @@ func TestCreateBook(t *testing.T) {
     setupTestDB()
     router := setupRouter()
 
-    book := api.Book{
+    book := models.Book{
         Title:         "New Book",
         Author:        "New Author",
         PageCount:     200,
@@ -133,7 +136,7 @@ func TestUpdateBook(t *testing.T) {
     book := addBook()
     router := setupRouter()
 
-    updateBook := api.Book{
+    updateBook := models.Book{
         Title:         "Advanced Go Programming",
         Author:        "Demo Author name",
         PageCount:     350,
@@ -175,9 +178,9 @@ func TestDeleteBook(t *testing.T) {
     }
 
     // Verify that the book was deleted
-	api.DB.Logger = logger.Default.LogMode(logger.Silent)
-    var deletedBook api.Book
-    result := api.DB.First(&deletedBook, book.ID)
+	repositories.DB.Logger = logger.Default.LogMode(logger.Silent)
+    var deletedBook models.Book
+    result := repositories.DB.First(&deletedBook, book.ID)
     if result.Error == nil {
         t.Errorf("Expected book to be deleted, but it still exists")
     }
