@@ -46,10 +46,16 @@ Or as part of the Docker build (see Dockerfile).
 
 ## Project Structure
 
-- `api/` - Handlers, models, response helpers
+- `api/`
+  - `handlers/` - HTTP handlers (controllers)
+  - `repositories/` - Database access logic (repository pattern)
+  - `model.go` - Core Book model
+  - `dto.go` - Data Transfer Objects (request/response structs)
+  - `response/` - Response helpers (JsonResponse, ResponseJson)
+  - `router.go` - Gin router setup
 - `cmd/` - Application entry point
 - `test/` - Automated tests
 
 ## Learning Resources
 
-This project was created as a way to learn Go and the Gin web framework. The [Go REST API Roadmap](https://roadmap.sh/golang/rest-api) was especially helpful in guiding me through best practices and the overall structure of a production-ready API. If you're starting out with Go or REST APIs, I highly recommend checking it out!
+This project is inspired by the [Go REST API Roadmap](https://roadmap.sh/golang/rest-api) tutorial, which provided a solid foundation for building RESTful APIs in Go. While I referenced the roadmap for best practices and overall guidance, I have customized and restructured the repository to fit my own learning goals and preferences. If you're starting out with Go or REST APIs, I highly recommend checking out the roadmap as a starting point!
