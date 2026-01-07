@@ -17,6 +17,10 @@ import (
     "go_book_api/api"
 )
 
+func init() {
+    gin.SetMode(gin.ReleaseMode)
+}
+
 func setupTestDB() {
 	var err error
 	api.DB, err = gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
